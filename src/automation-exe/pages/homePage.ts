@@ -1,9 +1,10 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../../base/basePage';
 import { LoginPage } from './loginPage';
+import { ProductsPage } from './productsPage';
 
 export class HomePage extends BasePage {
-    
+
     // Navigation elements
     private homeLink: Locator;
     private productsLink: Locator;
@@ -16,7 +17,7 @@ export class HomePage extends BasePage {
     private logoutLink: Locator;
     private deleteAccountLink: Locator;
 
-    
+
     constructor(page: Page) {
         super(page);
         this.homeLink = page.locator('a[href="/"]').first();
@@ -29,12 +30,17 @@ export class HomePage extends BasePage {
         this.contactUsLink = page.locator('a[href="/contact_us"]');
         this.logoutLink = page.locator('a[href="/logout"]');
         this.deleteAccountLink = page.locator('a[href="/delete_account"]');
-    
+
     }
-    
+
     async navigateToLoginPage(): Promise<LoginPage> {
         await this.clickElement(this.loginLink);
         return new LoginPage(this.page);
+    }
+
+    async navigateToProductsPage(): Promise<ProductsPage> {
+        await this.clickElement(this.productsLink);
+        return new ProductsPage(this.page);
     }
 
     async validateLoggedInUser(username: string): Promise<boolean> {
