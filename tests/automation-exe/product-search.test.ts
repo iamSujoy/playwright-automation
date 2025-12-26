@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 
-test('Search for a single specific product', async ({ page }) => {
+test('Search for a single specific product `Premium Polo T-Shirts`', async ({ page }) => {
     const productName = 'Premium Polo T-Shirts';
 
     let homePage = new HomePage(page);
@@ -24,7 +24,7 @@ test('Search for a single specific product', async ({ page }) => {
     expect(results[0]).toContain(productName);
 });
 
-test('Search for a product with generic term where multiple results are returned', async ({ page }) => {
+test('Search for a product with generic term `tshirt` where multiple results are returned', async ({ page }) => {
     const searchTerm = 'shirt';
     const expectedMinResults = 10;
     let homePage = new HomePage(page);

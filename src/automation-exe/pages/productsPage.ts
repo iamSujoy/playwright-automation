@@ -1,5 +1,6 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../../base/basePage';
+import { CartPage } from './cartPage';
 
 export class ProductsPage extends BasePage {
 
@@ -11,19 +12,6 @@ export class ProductsPage extends BasePage {
     private productCards: Locator;
     private addToCartButtons: Locator;
     private viewProductLinks: Locator;
-
-    // Category elements
-    private womenCategory: Locator;
-    private menCategory: Locator;
-    private kidsCategory: Locator;
-    private dressLink: Locator;
-    private topsLink: Locator;
-    private sareeLink: Locator;
-    private tshirtsLink: Locator;
-    private jeansLink: Locator;
-
-    // Brand elements
-    private brandLinks: Locator;
 
     // Modal elements
     private cartModal: Locator;
@@ -45,23 +33,10 @@ export class ProductsPage extends BasePage {
         this.addToCartButtons = page.locator('.add-to-cart');
         this.viewProductLinks = page.locator('a[href*="/product_details/"]');
 
-        // Category elements
-        this.womenCategory = page.locator('a[href="#Women"]');
-        this.menCategory = page.locator('a[href="#Men"]');
-        this.kidsCategory = page.locator('a[href="#Kids"]');
-        this.dressLink = page.locator('a[href="/category_products/1"]');
-        this.topsLink = page.locator('a[href="/category_products/2"]');
-        this.sareeLink = page.locator('a[href="/category_products/7"]');
-        this.tshirtsLink = page.locator('a[href="/category_products/3"]');
-        this.jeansLink = page.locator('a[href="/category_products/6"]');
-
-        // Brand elements
-        this.brandLinks = page.locator('.brands-name a[href*="/brand_products/"]');
-
         // Modal elements
         this.cartModal = page.locator('#cartModal');
         this.continueShoppingButton = page.locator('.close-modal');
-        this.viewCartLink = page.locator('a[href="/view_cart"]');
+        this.viewCartLink = page.locator('#cartModal [href="/view_cart"]');
 
         // Page title
         this.pageTitle = page.locator('.title.text-center');
@@ -103,6 +78,12 @@ export class ProductsPage extends BasePage {
         await this.page.locator(`[data-product-id="${productId}"]`).click();
     }
 
+    async addProductToCartByName(productName: string): Promise<void> {
+        const addToCartBtn = this.page.locator(`(//p[text()="${productName}"]/following-sibling::a[contains(@class,'add-to-cart')])`)
+        await addToCartBtn.first().hover();
+        await this.clickElement(addToCartBtn.nth(1));
+    }
+
     async viewProductDetails(productIndex: number): Promise<void> {
         await this.viewProductLinks.nth(productIndex).click();
     }
@@ -119,42 +100,12 @@ export class ProductsPage extends BasePage {
         return await this.productCards.nth(productIndex).locator('.productinfo h2').textContent() || '';
     }
 
-    // Category actions
-    async clickWomenCategory(): Promise<void> {
-        await this.womenCategory.click();
-    }
-
-    async clickMenCategory(): Promise<void> {
-        await this.menCategory.click();
-    }
-
-    async clickKidsCategory(): Promise<void> {
-        await this.kidsCategory.click();
-    }
-
-    async clickDressCategory(): Promise<void> {
-        await this.dressLink.click();
-    }
-
-    async clickTopsCategory(): Promise<void> {
-        await this.topsLink.click();
-    }
-
-    async clickSareeCategory(): Promise<void> {
-        await this.sareeLink.click();
-    }
-
-    async clickTshirtsCategory(): Promise<void> {
-        await this.tshirtsLink.click();
-    }
-
-    async clickJeansCategory(): Promise<void> {
-        await this.jeansLink.click();
-    }
 
     // Brand actions
-    async clickBrand(brandName: string): Promise<void> {
-        await this.page.locator(`a[href="/brand_products/${brandName}"]`).click();
+    async clickBrand(brandName: string): Promise<ProductsPage> {
+        const brandLink = this.page.locator(`a[href="/brand_products/${brandName}"]`);
+        await this.clickElement(brandLink);
+        return this;
     }
 
     async getBrandCount(brandName: string): Promise<string> {
@@ -168,11 +119,12 @@ export class ProductsPage extends BasePage {
     }
 
     async clickContinueShopping(): Promise<void> {
-        await this.continueShoppingButton.click();
+        await this.clickElement(this.continueShoppingButton);
     }
 
-    async clickViewCartFromModal(): Promise<void> {
-        await this.viewCartLink.click();
+    async clickViewCartFromModal(): Promise<CartPage> {
+        await this.clickElement(this.viewCartLink);
+        return new CartPage(this.page);
     }
 
     async isCartModalVisible(): Promise<boolean> {
