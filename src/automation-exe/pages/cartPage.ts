@@ -1,5 +1,7 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../../base/basePage';
+import { ProductsPage } from './productsPage';
+import { CheckoutPage } from './checkoutPage';
 
 export class CartPage extends BasePage {
 
@@ -12,6 +14,7 @@ export class CartPage extends BasePage {
     private readonly checkoutModal: Locator;
     private readonly deleteProductLinks: Locator;
     private readonly productLinks: Locator;
+    private readonly productPageLink: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -23,11 +26,18 @@ export class CartPage extends BasePage {
         this.checkoutModal = page.locator('#checkoutModal');
         this.deleteProductLinks = page.locator('.cart_quantity_delete');
         this.productLinks = page.locator('.cart_description h4 a');
+        this.productPageLink = page.locator('//u[text()="here"]');
     }
 
     // Action methods
-    async clickProceedToCheckout(): Promise<void> {
-        await this.proceedToCheckoutBtn.click();
+    async clickProceedToCheckout(): Promise<CheckoutPage> {
+        await this.clickElement(this.proceedToCheckoutBtn);
+        return new CheckoutPage(this.page);
+    }
+
+    async clickProductPageLink(): Promise<ProductsPage> {
+        await this.clickElement(this.productPageLink);
+        return new ProductsPage(this.page);
     }
 
     async clickContinueOnCart(): Promise<void> {
@@ -78,5 +88,17 @@ export class CartPage extends BasePage {
 
     async waitForCartTable(): Promise<void> {
         await this.cartTable.waitFor({ state: 'visible' });
+    }
+
+    async clearCartIfNotEmpty(): Promise<void> {
+        if (await this.isCartEmpty()) {
+            return;
+        }
+        const count = await this.getProductCount();
+        for (let i = 0; i < count; i++) {
+            const productName = await this.productRows.nth(0).locator('.cart_description h4 a').textContent() || '';
+            await this.deleteProduct(productName);
+            await this.page.waitForTimeout(1500);
+        }
     }
 }

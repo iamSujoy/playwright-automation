@@ -2,6 +2,7 @@ import { Page, Locator } from '@playwright/test';
 import { BasePage } from '../../base/basePage';
 import { LoginPage } from './loginPage';
 import { ProductsPage } from './productsPage';
+import { CartPage } from './cartPage';
 
 export class HomePage extends BasePage {
 
@@ -22,7 +23,7 @@ export class HomePage extends BasePage {
         super(page);
         this.homeLink = page.locator('a[href="/"]').first();
         this.productsLink = page.locator('a[href="/products"]');
-        this.cartLink = page.locator('a[href="/view_cart"]');
+        this.cartLink = page.getByRole('link', { name: ' Cart' });
         this.loginLink = page.locator('a[href="/login"]');
         this.testCasesLink = page.locator('a[href="/test_cases"]');
         this.apiTestingLink = page.locator('a[href="/api_list"]');
@@ -43,6 +44,11 @@ export class HomePage extends BasePage {
         return new ProductsPage(this.page);
     }
 
+    async navigateToCartPage(): Promise<CartPage> {
+        await this.clickElement(this.cartLink);
+        return new CartPage(this.page);
+    }
+
     async validateLoggedInUser(username: string): Promise<boolean> {
         const userLocator = this.page.getByText(`Logged in as ${username}`);
         return await userLocator.isVisible();
@@ -52,4 +58,5 @@ export class HomePage extends BasePage {
         await this.clickElement(this.logoutLink);
         return new LoginPage(this.page);
     }
+
 }

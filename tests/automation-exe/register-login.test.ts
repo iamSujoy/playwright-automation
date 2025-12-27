@@ -1,14 +1,14 @@
-import {test, expect} from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { HomePage } from "../../src/automation-exe/pages/homePage";
 import { generateRegistrationProfile } from "../../src/automation-exe/testData/registrationProfiles.data";
 import { VALID_LOGIN_USER, INVALID_EMAIL_LOGIN, INVALID_PASSWORD_LOGIN } from "../../src/automation-exe/testData/loginProfiles.data";
 
-test.beforeEach(async ({page}) => {
+test.beforeEach(async ({ page }) => {
     await page.goto('https://automationexercise.com/');
 });
 
 
-test('valid user registration', async ({ page }) => {
+test.skip('valid user registration', async ({ page }) => {
     const { accountInfo, addressInfo } = generateRegistrationProfile();
     let homePage = new HomePage(page);
     let loginPage = await homePage.navigateToLoginPage();

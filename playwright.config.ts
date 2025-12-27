@@ -1,4 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
+import { reportConfig } from './reporter.config';
+
 
 export default defineConfig({
   testDir: './tests',
@@ -12,7 +14,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 2,
   timeout: 30 * 1000,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['line'], ['html', { open: 'never' }]],
+  reporter: [['line'], ['html', { open: 'never' }], ["ortoni-report", reportConfig]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -27,8 +29,9 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
+      name: 'E-CommerceAutomationExercise',
       use: { ...devices['Desktop Chrome'] },
+      testDir: './tests/automation-exe',
     }
     // ,
 
